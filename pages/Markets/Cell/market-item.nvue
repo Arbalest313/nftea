@@ -12,12 +12,12 @@
 			
 			    <view :style="{width :getWidthOfSpan(5)}" >
 			        <view class="title-layout info-layout" id="title_name" @tap="sort">
-						<u--image  class="market-item-avatar " :showLoading="true" :src="entity.avatar" shape="circle" width="50px"
+						<u--image  class="market-item-avatar " :showLoading="true" :src="entity.image" shape="circle" width="50px"
 					     height="50px"></u--image>
 						<view class="tui-title-box">
 							<text class="tui-cell-title">{{ entity.title }}</text>
 							<view class="tui-sub-title">
-								<text class="tui-sub-content">{{ entity.subContent }}</text>
+								<text class="tui-sub-content">{{ entity.platform}}</text>
 							</view>
 						</view>
 					</view>
@@ -97,7 +97,7 @@ export default {
 			let systemInfo = uni.getSystemInfoSync()
 			let width = systemInfo.windowWidth;
 			// console.log(e, e/12 * (width - 34*2))
-			return e /12 * (width - 34*2) + "px"
+			return e /12 * (width - uni.upx2px(34)*2) + "px"
 		
 		},
 		getWidthOfTitleHeader(e){
@@ -107,8 +107,8 @@ export default {
 			let base = 12;
 			// console.log(width * 1 - 34 * 2)
 			// console.log(width * count/base  - 34 * 2)
-			 
-			return (width - 34 * 2) * count/base  + "px"
+			 3
+			return (width - uni.upx2px(34) * 2) * count/base  + "px"
 		},
 	}
 };
@@ -180,7 +180,7 @@ export default {
 }
 
 .tui-cell-title {
-	font-size: 36rpx;
+	font-size: 30rpx;
 	line-height: 56rpx;
 	/* text-align: left; */
 	flex: 1;
@@ -208,7 +208,7 @@ export default {
 }
 
 .tui-sub-content {
-	font-size: 28rpx;
+	font-size: 24rpx;
 	color: #bcbcbc;
 }
 

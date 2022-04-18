@@ -113,13 +113,20 @@
                 }
             }
         },
-        "domain" : "https://www.thorui.cn/",
+        "domain" : "https://www.nftea.cn/",
         "router" : {
             "mode" : "hash",
             "base" : ""
         },
         "devServer" : {
-            "https" : false
+            "https" : false,
+			"disableHostCheck": true,
+			"proxy": {
+						"/api": {
+							"target": "http://192.168.5.54:18002",
+							"changeOrigin": true
+						}
+					}
         },
         "uniStatistics" : {
             "enable" : true

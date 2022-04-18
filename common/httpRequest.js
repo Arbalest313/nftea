@@ -6,7 +6,8 @@
 const tui = {
 	//接口地址
 	interfaceUrl: function() {
-		return 'https://www.thorui.cn'
+		return"http://192.168.5.54:18002"
+		return 'http://localhost:18002/admin/'
 		//return 'https://test.thorui.cn'
 		//return 'https://uat.thorui.cn'
 		// return 'https://prod.thorui.cn'
@@ -101,7 +102,8 @@ const tui = {
 				data: postData,
 				header: {
 					'content-type': isForm ? 'application/x-www-form-urlencoded' : 'application/json',
-					'Authorization': tui.getToken()
+					'Authorization': tui.getToken(),
+					// "Access-Control-Allow-Origin": "*"
 				},
 				method: method, //'GET','POST'
 				dataType: 'json',

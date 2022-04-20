@@ -1,4 +1,4 @@
-# cli
+# cli2
 
 ## Project setup
 ```

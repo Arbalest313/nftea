@@ -1,0 +1,22 @@
+{
+  "name": "cli2",
+  "version": "0.1.0",
+  "private": true,
+  "browserslist": [
+    "Android >= 4.4",
+    "ios >= 9"
+  ],
+  "uni-app": {
+ 	"scripts": {
+ 		"custom-dev": {
+ 			"title": "HY-DEV",
+ 			"env": {
+ 				"UNI_PLATFORM": ""
+ 			},
+ 			"define": {
+ 				"DEV-HY": true
+			}
+		}
+	}
+	}
+}

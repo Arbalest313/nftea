@@ -22,57 +22,25 @@
 				<!-- <scroll-view class="paltform-scroll-view" :scroll-x="true"  :show-scrollbar="true" :scroll-into-view="scrollInto"> -->
 				<scroll-view class="paltform-scroll-view" scroll-x="true" :scroll-left="my_scroll_left" id="paltform-scroll-view">
 					
-				<view class="market-title" :style="{width : getWidthOfTitleHeader()}">
-				<!-- <view class="market-title" > -->
-				
-				    <u-row justify="space-between">
+					<view class="market-title" :style="{width : getWidthOfTitleHeader()}">
+					
+						<u-row justify="space-between">
 
-						<view :style="{width :getWidthOfSpan(item)}" v-for="(item,index) in getTitleData()">
-						    <view class="title-layout bg-purple" id="item.name" @tap="sort">
-								<text>{{item.name}}</text>
-								<view class="tui-price-arrow" v-show="item.canSort">
-									<view class="tui-icon-box tui-arrow-up">
-										<tui-icon name="turningup" :size="12"></tui-icon>
-									</view>
-									<view class="tui-icon-box tui-arrow-down">
-										<tui-icon name="turningdown" :size="12"></tui-icon>
-									</view>
-								</view>
-							</view>
-						</view>
-				       <!-- <u-col span="6">
-				            <view class="title-layout bg-purple-light" id="title_name" @tap="sort">
-								<text>名称</text>
-							</view>
-				        </u-col>
-				        <u-col span="4">
-				            <view class="title-layout bg-purple" id="title_price" @tap="sort">
-								<text>最新价</text>
-								<view class="tui-price-arrow">
-									<view class="tui-icon-box tui-arrow-up">
-										<tui-icon name="turningup" :size="12"></tui-icon>
-									</view>
-									<view class="tui-icon-box tui-arrow-down">
-										<tui-icon name="turningdown" :size="12"></tui-icon>
+							<view :style="{width :getWidthOfSpan(item)}" v-for="(item,index) in getTitleData()">
+								<view class="title-layout bg-purple" id="item.name" @tap="sort">
+									<text>{{item.name}}</text>
+									<view class="tui-price-arrow" v-show="item.canSort">
+										<view class="tui-icon-box tui-arrow-up">
+											<tui-icon name="turningup" :size="12"></tui-icon>
+										</view>
+										<view class="tui-icon-box tui-arrow-down">
+											<tui-icon name="turningdown" :size="12"></tui-icon>
+										</view>
 									</view>
 								</view>
 							</view>
-				        </u-col>
-				        <u-col span="3">
-				            <view class="title-layout bg-purple-dark" id="title_delta" @tap="sort">
-								<text>波动</text>
-								<view class="tui-price-arrow">
-									<view class="tui-icon-box tui-arrow-up">
-										<tui-icon name="turningup" :size="12" ></tui-icon>
-									</view>
-									<view class="tui-icon-box tui-arrow-down">
-										<tui-icon name="turningdown" :size="12" ></tui-icon>
-									</view>
-								</view>
-							</view>
-				        </u-col> -->
-				    </u-row>
-				</view>
+						</u-row>
+					</view>
 				</scroll-view>
 				<!-- #ifdef APP-NVUE -->
 				<list class="tui-scroll-v" enableBackToTop="true" scroll-y loadmoreoffset="15" @loadmore="loadMore(index1)">
@@ -128,6 +96,11 @@
 			marketItem
 		},
 		data() {
+			// // #ifndef DEV-HY
+			// 	return {
+					
+			// 	}
+			// //#endif
 			return {
 				my_scroll_left:0,
 				isIos: false,
@@ -176,16 +149,18 @@
 		},
 		onLoad() {
 			setTimeout(() => {
-				this.platformDataList = this.randomfn();
+				this.platformDataList = this.platformData();
+				this.onrefresh(this.tabIndex)
 				uni.getSystemInfo({
 					success: res => {
 						this.isIos = 'ios' == res.platform.toLocaleLowerCase();
 					}
 				});
 			}, 200);
+
 		},
 		methods: {
-			randomfn() {
+			platformData() {
 				let ary = [];
 				for (let i = 0, length = this.tabBars.length; i < length; i++) {
 					let aryItem = {
@@ -194,11 +169,12 @@
 						refreshText: '',
 						data: [],
 						isLoading: false,
-						pageIndex: 1
+						pageIndex: 1,
+						hasMore: true,
 					};
 					if (i === this.tabIndex) {
-						aryItem.pageIndex = 2;
-						aryItem.data = aryItem.data.concat(this.getRandomData());
+						// aryItem.pageIndex = 2;
+						// aryItem.data = aryItem.data.concat(this.getRandomData());
 					}
 					ary.push(aryItem);
 				}
@@ -209,7 +185,7 @@
 				if(refresh){
 					activeTab.loadingText = '正在加载...';
 				}
-				var list = this.getRandomData();
+				var list = [];
 				this.tui.request("/api/v1/common/nfts","GET",{
 					platform: this.tabBars[index].id
 				}).then((res)=>{
@@ -218,17 +194,23 @@
 						var items = [];
 						res.results.forEach(function (result, i) {
 							var item = {}
-							 item.price = result['current_price'] || 10;
-							 item.title = result['name'] || "";
-							 item.image = result['image'] || "";
-							 item.delta = -10
-							 item.platform = result['platform']['platform_name'] || "";
-							 items.push(item);
+							// item = result.copy()
+							item.price = result['current_price'] || 10;
+							item.title = result['name'] || "";
+							item.image = result['image'] || "";
+							item.day_price_diff_percentage = result["day_price_diff_percentage"]
+							item.platform = result['platform']['platform_name'] || "";
+							item.six_hour_price_diff_percentage = result['six_hour_price_diff_percentage'] || "";
+							item.day_price_average = result['day_price_average'] || "";
+							item.six_hour_price_average = result['six_hour_price_average'] || "";
+							 // imte.six_hour_price_diff_percentage = result['six_hour_price_diff_percentage'] || "";
+							 
+							items.push(item);
 						});	
-						list = items.length > 0 ? items : list;
+						list = items.length > 0 ? items : lis;
 						this.tui.toast('获取成功');
+						activeTab.hasMore = res["has_more"] || false
 						if (refresh) {
-							activeTab.data = [];
 							activeTab.pageIndex = 0;
 							activeTab.data = list;
 							// activeTab.isLoading = false;
@@ -268,7 +250,7 @@
 			loadMore(e) {
 				let index = this.tabIndex
 				let activeTab = this.platformDataList[index];
-				if (activeTab.pageIndex < 4 && !activeTab.isLoading) {
+				if (!activeTab.isLoading && activeTab.hasMore) {
 					activeTab.isLoading = true;
 					setTimeout(() => {
 						this.getList(index);
@@ -387,17 +369,22 @@
 						canSort: true,
 					},
 					{
-						name:"波动",
+						name:"昨日Avg",
 						slot: 3,
 						canSort: true,
 					},
 					{
-						name:"换手量",
+						name:"Avg波动",
 						slot: 3,
 						canSort: true,
 					},
 					{
-						name:"波动",
+						name:"6小时avg",
+						slot: 3,
+						canSort: true,
+					},
+					{
+						name:"6小时波动",
 						slot: 3,
 						canSort: true,
 					},
@@ -442,149 +429,6 @@
 				// }).exec();
 				// console.log(header_scroll_v)
 			},
-			getRandomData(e){
-				return [{
-							title: '云梯',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'artmeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '奶龙',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'onemeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '纸袋人',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'nftcn',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(10, 200)/1.0 * (uni.$u.random(0, 1) * 2 - 1)
-						},{
-							title: '云梯',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'artmeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '奶龙',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'onemeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '纸袋人',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'nftcn',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(10, 200)/1.0 * (uni.$u.random(0, 1) * 2 - 1)
-						},{
-							title: '云梯',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'artmeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '奶龙',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'onemeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '纸袋人',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'nftcn',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(10, 200)/1.0 * (uni.$u.random(0, 1) * 2 - 1)
-						},{
-							title: '云梯',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'artmeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '奶龙',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'onemeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '纸袋人',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'nftcn',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(10, 200)/1.0 * (uni.$u.random(0, 1) * 2 - 1)
-						},{
-							title: '云梯',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'artmeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '奶龙',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'onemeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '纸袋人',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'nftcn',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(10, 200)/1.0 * (uni.$u.random(0, 1) * 2 - 1)
-						},{
-							title: '云梯',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'artmeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '奶龙',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'onemeta',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(100, 20000)/100.0 * (uni.$u.random(0, 1) * 2 - 1)
-							
-						},{
-							title: '纸袋人',
-							image: "https://file.onemeta.cc/uploads/20220412/3bb7ff2b8b75f56435f49b351739b4dd.jpg",
-
-							platform: 'nftcn',
-							price: uni.$u.random(10, 10000)/10.0,
-							delta: uni.$u.random(10, 200)/1.0 * (uni.$u.random(0, 1) * 2 - 1)
-						},				
-					];
-			
-			}
 		}
 	};
 </script>
@@ -595,6 +439,7 @@
 		width: 100%;
 		min-height: 100%;
 		display: flex;
+		/* bounce:none; */
 	}
 
 	/* #endif */

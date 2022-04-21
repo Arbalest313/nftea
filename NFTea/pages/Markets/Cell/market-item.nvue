@@ -32,7 +32,7 @@
 			    
 			        <view class="title-layout bg-purple-dark" id="title_delta" :class="[getClass(entity.delta)]" @tap="sort">
 						
-						<text class="tui-cell-title title-del">{{getPercentage(entity.delta )}}</text>
+						<text class="tui-cell-title title-del">{{getPercentage(entity.day_price_average )}}</text>
 						<!-- <text class="tui-badge" v-if="entity.badgeType != 0">{{ entity.badgeText }}</text> -->
 						
 					</view>
@@ -41,7 +41,7 @@
 				
 				    <view class="title-layout bg-purple-dark" id="title_delta" :class="[getClass(entity.delta)]" @tap="sort">
 						
-						<text class="tui-cell-title title-del">{{getPercentage(entity.delta )}}</text>
+						<text class="tui-cell-title title-del">{{getPercentage(entity.day_price_diff_percentage )}}</text>
 						<!-- <text class="tui-badge" v-if="entity.badgeType != 0">{{ entity.badgeText }}</text> -->
 						
 					</view>
@@ -50,7 +50,16 @@
 				
 				    <view class="title-layout bg-purple-dark" id="title_delta" :class="[getClass(entity.delta)]" @tap="sort">
 						
-						<text class="tui-cell-title title-del">{{getPercentage(entity.delta )}}</text>
+						<text class="tui-cell-title title-del">{{getPercentage(entity.six_hour_price_average )}}</text>
+						<!-- <text class="tui-badge" v-if="entity.badgeType != 0">{{ entity.badgeText }}</text> -->
+						
+					</view>
+				</view>
+				<view :style="{width :getWidthOfSpan(3)}" >
+				
+				    <view class="title-layout bg-purple-dark" id="title_delta" :class="[getClass(entity.delta)]" @tap="sort">
+						
+						<text class="tui-cell-title title-del">{{getPercentage(entity.six_hour_price_diff_percentage )}}</text>
 						<!-- <text class="tui-badge" v-if="entity.badgeType != 0">{{ entity.badgeText }}</text> -->
 						
 					</view>
@@ -126,7 +135,7 @@ export default {
 }
 
 .tui-list-cell {
-	width: 1000rpx;
+	/* width: 1000rpx; */
 	padding-left: 30rpx;
 	padding-top: 30rpx;
 	padding-bottom: 30rpx;
